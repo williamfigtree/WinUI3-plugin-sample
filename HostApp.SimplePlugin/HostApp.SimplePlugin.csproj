@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>HostApp.SimplePlugin</RootNamespace>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+	<EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Images\StoreLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="SimpleUI.xaml" />
+    <None Remove="Strings\en-us\Resources.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Input" Version="7.1.2" />
+	  <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" >
+		  <ExcludeAssets>runtime</ExcludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.194" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\HostApp.Plugin.Contract\HostApp.Plugin.Contract.csproj">
+		  <Private>false</Private>
+		  <ExcludeAssets>runtime</ExcludeAssets>
+	  </ProjectReference>
+    <ProjectReference Include="..\HostApp.SimplePlugin.Extra\HostApp.SimplePlugin.Extra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AppxManifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\StoreLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="SimpleUI.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="powershell -file $(MSBuildProjectDirectory)\build\deploy.ps1 $(TargetDir) my_certificate_path my_password" />
+	</Target>
+</Project>
